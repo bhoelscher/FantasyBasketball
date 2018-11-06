@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Fantasy Basketball</title>
+</head>
+<body>
+    <div class="index">
+        <ul>
+            <li><a class="link" href="/home">Home</a></li>
+            <li><a class="link" href="/standings">Standings</a></li>
+            <li><a class="link" href="/schedule">View Matchups</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">Teams</a>
+                <div class="dropdown-content">
+                    {{#each team}}
+                    <a class="link" href="/viewTeam?teamId={{this.id}}">{{this.fantasyTeamName}}</a>    
+                    {{/each}}     
+                </div> 
+            </li>
+            <li><a class="link" href="/viewTeam">View Team</a></li>
+            <li><a class="link" href="/allPlayers">All Players</a></li>
+            <li><a class="link" href="/unownedPlayers">Unowned Players</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">Create</a>
+                <div class="dropdown-content">
+                    <a class="link" href="/createPlayer">Create Player</a>
+                    <a class="link" href="/createTeam">Create Team</a>
+                    <a class="link" href="/createMatchup">Create Matchup</a>
+                    <a class="link" href="/createPerformance">Create Performance</a>
+                    <a class="link" href="/createSchedule">Create Schedule</a>
+                    <a class="link" href="/createLeague">Create League</a>            
+                </div>
+            </li>
+            <li><a class="link" href="/updateLeague">League Settings</a></li>
+            <li>
+                Change League:     
+                <form id="selectleague" action="/home" method="post">
+                    <select name="League">
+                        {{#each options}}
+                        <option value="{{this.id}}" {{{selected this.id}}}>{{this.name}}</option>
+                        {{/each}}
+                    </select>
+                    <input type="submit" value="Change">
+                </form>
+            </li>
+        </ul>
+    </div>
+	{{{body}}}
+</body>
+</html>

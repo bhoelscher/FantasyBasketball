@@ -1,0 +1,10 @@
+DROP VIEW `v_matchup_scores`;
+DROP VIEW `v_home_scores`;
+DROP VIEW `v_away_scores`;
+DROP TABLE `performances`;
+DROP TABLE `matchups`;
+DROP TABLE `schedule`;
+DROP TABLE `teams_to_players`;
+DROP TABLE `players`;
+DROP TABLE `teams`;
+DROP TABLE `leagues`;

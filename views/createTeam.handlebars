@@ -1,0 +1,27 @@
+<h3>Create new Team</h3>
+
+<form id="createteam" action="/createTeam" method="post">
+    <br>
+    Team Name:
+    <input type="text" name="teamName">
+    <br>
+    Abbreviation:
+    <input type="text" name="abbreviation">
+    <br>
+    <input type="submit" value="Submit">
+</form>
+
+<h3>Current Teams in {{#each league}}{{this.name}}{{/each}}</h3>
+<table>
+    <tr>
+        <th>TeamName</th>
+        <th>Abbreviation</th>
+    </tr>
+{{#each team}}
+    <tr>
+        <td>{{this.fantasyTeamName}}</td>
+        <td>{{this.abbreviation}}</td>
+        <td><button onclick="deleteTeam({{this.id}})">Delete</button></td>
+    </tr>
+{{/each}}
+</table>

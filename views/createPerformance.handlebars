@@ -1,0 +1,48 @@
+<h3>Add New Performance</h3>
+
+<form id="createperformance" action="/createPerformance" method="post">
+    <br>
+    Date:
+    <input type="date" name="performanceDate">
+    <br>
+    Player:
+    <select name="player">
+        {{#each player}}
+        <option value="{{this.id}}">{{this.fName}} {{this.lname}} - {{this.basketballTeam}}</option>
+        {{/each}}
+    </select>
+    <br>
+    FGM
+    <input type="number" name="FGM">
+    <br>
+    FGA
+    <input type="number" name="FGA">
+    <br>
+    FTM
+    <input type="number" name="FTM">
+    <br>
+    FTA
+    <input type="number" name="FTA">
+    <br>
+    Points
+    <input type="number" name="Points">
+    <br>
+    Assists
+    <input type="number" name="Assists">
+    <br>
+    Rebounds
+    <input type="number" name="Rebounds">
+    <br>
+    Steals
+    <input type="number" name="Steals">
+    <br>
+    Blocks
+    <input type="number" name="Blocks">
+    <br>
+    Turnovers
+    <input type="number" name="Turnovers">
+    <br>
+    <input type="submit" value="Submit">
+</form>
+
+{{status}}

@@ -1,0 +1,29 @@
+<h3>Create New Matchups</h3>
+
+<form id="creatematchup" action="/createMatchup" method="post">
+    <br>
+    Week:
+    <select name="Week">
+        {{#each week}}
+        <option value="{{this.weekId}}">{{this.weekId}}: {{this.startDate}} - {{this.endDate}}</option>
+        {{/each}}
+    </select>
+    <br>
+    Home Team:
+    <select name="homeTeam">
+        {{#each team}}
+        <option value="{{this.id}}">{{this.fantasyTeamName}}</option>
+        {{/each}}
+    </select>
+    <br>
+    Away Team:
+    <select name="awayTeam">
+        {{#each team}}
+        <option value="{{this.id}}">{{this.fantasyTeamName}}</option>
+        {{/each}}
+    </select>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+
+{{status}}

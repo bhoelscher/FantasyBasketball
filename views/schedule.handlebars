@@ -1,0 +1,22 @@
+<h1>Schedule</h1>
+
+<table>
+    <tr>
+        <th>Week</th>
+        <th>Home Team</th>
+        <th>Home Score</th>
+        <th>Away Score</th>
+        <th>Away Team</th>
+        <th>Details</th>
+    </tr>
+    {{#each matchup}}
+    <tr>
+        <td>{{week}}</td>
+        <td>{{homeTeam}}</td>
+        <td>{{homeScore}}</td>
+        <td>{{awayScore}}</td>
+        <td>{{awayTeam}}</td>
+        <td>{{details}}</td>
+    </tr>
+    {{/each}}
+</table>

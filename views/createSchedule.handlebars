@@ -1,0 +1,26 @@
+<h3>Create New Schedule</h3>
+
+<form id="createschedule" action="/createSchedule" method="post">
+    <br>
+    Start Date:
+    <input type="date" name="startDate">
+    <br>
+    End Date:
+    <input type="date" name="endDate">
+    <br>
+    <input type="submit" value="Submit">
+</form>
+
+<h3>Current Schedules</h3>
+<table>
+    <tr>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+{{#each rows}}
+    <tr>
+        <td>{{this.startDate}}</td>
+        <td>{{this.endDate}}</td>
+    </tr>
+{{/each}}
+</table>
