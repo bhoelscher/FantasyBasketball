@@ -27,3 +27,19 @@
 </form>
 
 {{status}}
+
+<h3>Current Matchups</h3>
+<table>
+    <tr>
+        <th>Home Team</th>
+        <th>Away Team</th>
+        <th>Week</th>
+    </tr>
+{{#each matchup}}
+    <tr>
+        <td>{{this.homeTeam}}</td>
+        <td>{{this.awayTeam}}</td>
+        <td>{{this.week}}</td>
+    </tr>
+{{/each}}
+</table>

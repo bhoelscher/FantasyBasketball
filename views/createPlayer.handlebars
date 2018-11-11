@@ -55,3 +55,21 @@
 </form>
 
 {{status}}
+
+<h3>Current Players</h3>
+<table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Team</th>
+        <th>Position</th>
+    </tr>
+{{#each player}}
+    <tr>
+        <td>{{this.fName}}</td>
+        <td>{{this.lname}}</td>
+        <td>{{this.basketballTeam}}</td>
+        <td>{{this.position}}</td>
+    </tr>
+{{/each}}
+</table>

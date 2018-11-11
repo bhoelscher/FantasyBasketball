@@ -50,11 +50,13 @@ order by winsMinusLosses desc;
 
 -- View Schedule
 
-select m.homeTeam, m.awayTeam, m.homePoints, m.awayPoints, m.week
-from matchups m
-inner join teams t on m.hometeam = t.id
-where t.leagueId = :leagueIdInput
-order by m.week;
+SELECT t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints
+FROM matchups m
+INNER JOIN teams t ON m.hometeam = t.id
+INNER JOIN teams t2 ON m.awayTeam = t2.id
+INNER JOIN v_matchup_scores v ON v.id = m.id
+WHERE t.leagueId = :leagueIdInput
+ORDER BY m.week;
 
 -- View fantasy points of a performance (FOR REFERENCE)
 select p.id, (p.FGM*l.FGM + p.FGA*l.FGA + p.FTM*l.FTM + p.FTA*l.FTA + p.points*l.points + p.assists*l.assists + p.rebounds*l.rebounds + p.steals*l.steals + p.blocks*l.blocks + p.turnovers*l.turnovers) as FantasyPoints
@@ -123,26 +125,34 @@ and p.date >= schedule.startDate;
 
 -- View players - all
 
-select distinct players.id, players.fName, players.lname, players.basketballTeam, players.position, t.abbreviation
-from teams_to_players ttp 
-inner join teams t on ttp.teamId = t.id and leagueId = :leagueIdInput
-right outer join players on ttp.playerId = players.id;
-
--- View players - unowned
-
-select distinct players.id, players.fName, players.lname, players.basketballTeam, players.position, t.abbreviation
+select distinct players.id, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints, t.abbreviation, t.id as teamId
 from teams_to_players ttp 
 inner join teams t on ttp.teamId = t.id and leagueId = :leagueIdInput
 right outer join players on ttp.playerId = players.id
+left outer join v_average_performances avg on players.id = avg.playerId
+inner join leagues l on l.id = :leagueIdInput;
+
+-- View players - unowned
+
+select distinct players.id as playerId, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints
+from teams_to_players ttp 
+inner join teams t on ttp.teamId = t.id and leagueId = :leagueIdInput
+right outer join players on ttp.playerId = players.id
+left outer join v_average_performances avg on players.id = avg.playerId
+inner join leagues l on l.id = :leagueIdInput
 where t.abbreviation is NULL;
 
 -- View players - specific Team
 
-select distinct players.id, players.fName, players.lname, players.basketballTeam, players.position, t.abbreviation
-from teams_to_players ttp 
-inner join teams t on ttp.teamId = t.id
-right outer join players on ttp.playerId = players.id
-where t.id = :teamIdInput;
+SELECT DISTINCT players.id, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints
+FROM teams_to_players ttp 
+INNER JOIN teams t ON ttp.teamId = t.id
+RIGHT OUTER JOIN players ON ttp.playerId = players.id
+left outer join v_average_performances avg on players.id = avg.playerId
+inner join leagues l on l.id = :leagueIdInput
+WHERE t.id = :teamIdInput;
+
+
 
 -- Create League
 

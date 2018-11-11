@@ -11,12 +11,12 @@
     </tr>
     {{#each matchup}}
     <tr>
-        <td>{{week}}</td>
-        <td>{{homeTeam}}</td>
-        <td>{{homeScore}}</td>
-        <td>{{awayScore}}</td>
-        <td>{{awayTeam}}</td>
-        <td>{{details}}</td>
+        <td>{{this.week}}</td>
+        <td>{{this.homeTeam}}</td>
+        <td>{{this.homeTeamPoints}}</td>
+        <td>{{this.awayTeamPoints}}</td>
+        <td>{{this.awayTeam}}</td>
+        <td>{{this.details}}</td>
     </tr>
     {{/each}}
 </table>

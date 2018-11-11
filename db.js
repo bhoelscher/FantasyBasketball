@@ -98,6 +98,7 @@ app.post('/createSchedule',function(req,res){
             res.write(JSON.stringify(err));
             return;
         }
+        context.status = 'Schedule Created'
         mysql.pool.query('SELECT startDate, endDate FROM schedule', function(err, rows, fields){
             if(err){
                 res.write(JSON.stringify(err));
@@ -131,7 +132,7 @@ app.get('/createLeague',function(req,res,next){
             return;
         }
         context.team = rows;
-        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+        mysql.pool.query('SELECT id, name, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM leagues', function(err, newrows, newfields){
             if(err){
                 res.write(JSON.stringify(err));
                 return;
@@ -156,7 +157,7 @@ app.post('/createLeague',function(req,res){
                 return;
             }
             context.team = rows;
-            mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            mysql.pool.query('SELECT id, name, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM leagues', function(err, newrows, newfields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
@@ -182,7 +183,14 @@ app.get('/createPlayer',function(req,res,next){
                 return;
             }
             context.options = newrows;
-            res.render('createPlayer', context);
+            mysql.pool.query('SELECT fName, lname, basketballTeam, position FROM players', function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.player = rows;
+                res.render('createPlayer', context);
+            })
         })
     })
 });
@@ -207,7 +215,14 @@ app.post('/createPlayer',function(req,res){
                     return;
                 }
                 context.options = newrows;
-                res.render('createPlayer', context);
+                mysql.pool.query('SELECT fName, lname, basketballTeam, position FROM players', function(err, rows, fields){
+                    if(err){
+                        res.write(JSON.stringify(err));
+                        return;
+                    }
+                    context.player = rows;
+                    res.render('createPlayer', context);
+                })
             })
         })
     })
@@ -233,7 +248,14 @@ app.get('/createPerformance',function(req,res,next){
                     return;
                 }
                 context.options = newrows;
-                res.render('createPerformance', context);
+                mysql.pool.query('SELECT playerId, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances', function(err, rows, fields){
+                    if(err){
+                        res.write(JSON.stringify(err));
+                        return;
+                    }
+                    context.performance = rows;
+                    res.render('createPerformance', context);
+                })
             })
         })
     })
@@ -265,7 +287,14 @@ app.post('/createPerformance',function(req,res){
                         return;
                     }
                     context.options = newrows;
-                    res.render('createPerformance', context);
+                    mysql.pool.query('SELECT playerId, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances', function(err, rows, fields){
+                        if(err){
+                            res.write(JSON.stringify(err));
+                            return;
+                        }
+                        context.performance = rows;
+                        res.render('createPerformance', context);
+                    })
                 })
             })
         })
@@ -318,6 +347,7 @@ app.post('/createTeam',function(req,res){
                 res.write(JSON.stringify(err));
                 return;
             }
+            context.status = 'Team Created'
             mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?;',[leagueId], function(err, newrows, newfields){
                 if(err){
                     res.write(JSON.stringify(err));
@@ -358,12 +388,12 @@ app.get('/createMatchup',function(req,res,next){
                 return;
             }
             context.team = newrows;
-            mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+            mysql.pool.query('SELECT m.homeTeam, m.awayTeam, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
                 }
-                context.team = rows;
+                context.matchup = rows;
                 mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
                     if(err){
                         res.write(JSON.stringify(err));
@@ -397,12 +427,12 @@ app.post('/createMatchup',function(req,res){
                     return;
                 }
                 context.status = 'Matchup Created';
-                mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+                mysql.pool.query('SELECT m.homeTeam, m.awayTeam, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
                     if(err){
                         res.write(JSON.stringify(err));
                         return;
                     }
-                    context.team = rows;
+                    context.matchup = rows;
                     mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
                         if(err){
                             res.write(JSON.stringify(err));
@@ -416,6 +446,128 @@ app.post('/createMatchup',function(req,res){
         })
     })
 })
+
+app.get('/schedule',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?;',[leagueId], function(err, newrows, newfields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = newrows;
+        mysql.pool.query('SELECT t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints FROM matchups m INNER JOIN teams t ON m.hometeam = t.id INNER JOIN teams t2 ON m.awayTeam = t2.id INNER JOIN v_matchup_scores v ON v.id = m.id WHERE t.leagueId = ? ORDER BY m.week;',[leagueId], function(err, rows, fields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.matchup = rows;
+            mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.options = newrows;
+                res.render('schedule', context);
+            })
+        })
+    })
+});
+
+app.get('/viewTeam',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('SELECT DISTINCT players.id, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints FROM teams_to_players ttp  INNER JOIN teams t ON ttp.teamId = t.id RIGHT OUTER JOIN players ON ttp.playerId = players.id left outer join v_average_performances avg on players.id = avg.playerId inner join leagues l on l.id = ? WHERE t.id = ?;',[leagueId, req.query.teamId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.player = rows;
+                mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE id = ?', [req.query.teamId], function(err, rows, fields){
+                    if(err){
+                        res.write(JSON.stringify(err));
+                        return;
+                    }
+                    context.curTeam = rows;
+                    res.render('viewTeam', context);
+                })
+            })
+        })
+    })
+});
+
+app.get('/unownedPlayers',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('select distinct players.id as playerId, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints from teams_to_players ttp inner join teams t on ttp.teamId = t.id and leagueId = ? right outer join players on ttp.playerId = players.id left outer join v_average_performances avg on players.id = avg.playerId inner join leagues l on l.id = ? where t.abbreviation is NULL;',[leagueId, leagueId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.player = rows;
+                res.render('unownedPlayers', context);
+            })
+        })
+    })
+});
+
+app.post('/addPlayer',function(req,res){
+    var context = {};
+    mysql.pool.query('INSERT INTO `teams_to_players` (teamId,playerId) VALUES (?,?);', [req.body.Team, req.body.player], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        res.redirect('/viewTeam?teamId=' + req.body.Team);
+    })
+})
+
+app.get('/allPlayers',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('select distinct players.id, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints, t.abbreviation, t.id as teamId from teams_to_players ttp inner join teams t on ttp.teamId = t.id and leagueId = ? right outer join players on ttp.playerId = players.id left outer join v_average_performances avg on players.id = avg.playerId inner join leagues l on l.id = ?;',[leagueId, leagueId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.player = rows;
+                res.render('allPlayers', context);
+            })
+        })
+    })
+});
 
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');

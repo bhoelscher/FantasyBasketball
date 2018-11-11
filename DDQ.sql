@@ -176,3 +176,17 @@ inner join schedule on matchups.week = schedule.weekId
 left outer join v_home_scores on matchups.id = v_home_scores.matchupId
 left outer join v_away_scores on matchups.id = v_away_scores.matchupId
 
+CREATE VIEW v_average_performances as
+SELECT p.playerId, 
+  AVG(p.FGM) as FGM, 
+  AVG(p.FGA) as FGA, 
+  AVG(p.FTM) as FTM, 
+  AVG(p.FTA) as FTA,
+  AVG(p.points) as points, 
+  AVG(p.assists) as assists, 
+  AVG(p.rebounds) as rebounds, 
+  AVG(p.steals) as steals, 
+  AVG(p.blocks) as blocks, 
+  AVG(p.turnovers) as turnovers
+FROM performances p
+GROUP BY p.playerId
