@@ -1,0 +1,42 @@
+<h1>{{#each curTeam}}{{this.fantasyTeamName}} ({{this.abbreviation}}) {{/each}}</h1>
+
+<h3>Players Owned</h3>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Position</th>
+        <th>FGM</th>
+        <th>FGA</th>
+        <th>FTM</th>
+        <th>FTA</th>
+        <th>Points</th>
+        <th>Assists</th>
+        <th>Rebounds</th>
+        <th>Steals</th>
+        <th>Blocks</th>
+        <th>Turnovers</th>
+        <th>Fantasy Points</th>
+        <th>Drop Player</th>
+    </tr>
+{{#each player}}
+    <tr>
+        <td>{{this.fName}} {{this.lname}}</td>
+        <td>{{this.basketballTeam}}</td>
+        <td>{{this.position}}</td>
+        <td>{{this.FGA}}</td>
+        <td>{{this.FGM}}</td>
+        <td>{{this.FTA}}</td>
+        <td>{{this.FTM}}</td>
+        <td>{{this.points}}</td>
+        <td>{{this.assists}}</td>
+        <td>{{this.rebounds}}</td>
+        <td>{{this.steals}}</td>
+        <td>{{this.blocks}}</td>
+        <td>{{this.turnovers}}</td>
+        <td>{{this.FantasyPoints}}</td>
+        <td>DROPBUTTON</td>
+    </tr>
+{{/each}}
+</table>
