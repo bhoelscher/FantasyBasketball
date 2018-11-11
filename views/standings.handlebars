@@ -1,0 +1,18 @@
+<h1>Standings</h1>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Position</th>
+        <th>FGM</th>
+    </tr>
+{{#each standing}}
+    <tr>
+        <td>{{this.fantasyTeamName}}</td>
+        <td>{{this.wins}}</td>
+        <td>{{this.losses}}</td>
+        <td>{{this.ties}}</td>
+    </tr>
+{{/each}}
+</table>

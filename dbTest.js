@@ -569,6 +569,32 @@ app.get('/allPlayers',function(req,res,next){
     })
 });
 
+app.get('/standings',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('select teams.id, fantasyTeamName, COALESCE(winners.wins,0) as wins, COALESCE(losers.losses, 0) as losses, COALESCE((home.homeTies + away.awayTies),0) as ties, (COALESCE(winners.wins,0) - COALESCE(losers.losses, 0)) as winsMinusLosses from teams left outer join (select teams.id as team, count(results.winner) as wins from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.homeTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.awayTeam else NULL end) as winner from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.winner group by teams.id) as winners on winners.team = teams.id left outer join (select teams.id as team, count(results.loser) as losses from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.awayTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.homeTeam else NULL end) as loser from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.loser group by teams.id) as losers on losers.team = teams.id left outer join (select teams.id as homeTeam, count(v_matchup_scores.id) as homeTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.homeTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as home on teams.id = home.homeTeam left outer join (select teams.id as awayTeam, count(v_matchup_scores.id) as awayTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.awayTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as away on teams.id = away.awayTeam where teams.leagueId = ? order by winsMinusLosses desc;',[leagueId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.standing = rows;
+                res.render('standings', context);
+            })
+        })
+    })
+});
+
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
