@@ -635,6 +635,18 @@ app.post('/viewMatchup',function(req,res){
     })
 })
 
+app.post('/dropPlayer',function(req,res){
+    var context = {};
+    mysql.pool.query('DELETE FROM`teams_to_players` WHERE `teamId` = ? AND playerId = ?;',[req.body.teamId, req.body.playerId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        res.redirect('/viewTeam?teamId=' + req.body.teamId);
+    })
+})
+
+
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });

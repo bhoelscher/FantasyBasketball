@@ -36,7 +36,11 @@
         <td>{{this.blocks}}</td>
         <td>{{this.turnovers}}</td>
         <td>{{this.FantasyPoints}}</td>
-        <td>DROPBUTTON</td>
+        <td><form action="/dropPlayer" method="post">
+                <input type="hidden" name="playerId" value="{{this.id}}">
+                <input type="hidden" name="teamId" value="{{#each ../curTeam}}{{this.id}}{{/each}}">
+                <input type="submit" value="Drop Player">
+            </form></td>
     </tr>
 {{/each}}
 </table>
