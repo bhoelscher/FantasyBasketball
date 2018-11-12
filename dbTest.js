@@ -615,7 +615,21 @@ app.post('/viewMatchup',function(req,res){
                     return;
                 }
                 context.matchup = rows;
-                res.render('viewMatchup', context);
+                mysql.pool.query('select players.fName, players.lname, p.date, p.FGM, p.FGA, p.FTM, p.FTA, p.points, p.assists, p.rebounds, p.steals, p.blocks, p.turnovers, (p.FGM*l.FGM + p.FGA*l.FGA + p.FTM*l.FTM + p.FTA*l.FTA + p.points*l.points + p.assists*l.assists + p.rebounds*l.rebounds + p.steals*l.steals + p.blocks*l.blocks + p.turnovers*l.turnovers) as FantasyPoints from performances p inner join players on p.playerId = players.id inner join teams_to_players ttp on players.id = ttp.playerId inner join matchups on ttp.teamId = matchups.homeTeam inner join teams on matchups.homeTeam = teams.id inner join schedule on matchups.week = schedule.weekId inner join leagues l on l.id = teams.leagueId where matchups.id = ? and p.date <= schedule.endDate and p.date >= schedule.startDate;',[req.body.id], function(err, rows, fields){
+                    if(err){
+                        res.write(JSON.stringify(err));
+                        return;
+                    }
+                    context.homePerformance = rows;
+                    mysql.pool.query('select players.fName, players.lname, p.date, p.FGM, p.FGA, p.FTM, p.FTA, p.points, p.assists, p.rebounds, p.steals, p.blocks, p.turnovers, (p.FGM*l.FGM + p.FGA*l.FGA + p.FTM*l.FTM + p.FTA*l.FTA + p.points*l.points + p.assists*l.assists + p.rebounds*l.rebounds + p.steals*l.steals + p.blocks*l.blocks + p.turnovers*l.turnovers) as FantasyPoints from performances p inner join players on p.playerId = players.id inner join teams_to_players ttp on players.id = ttp.playerId inner join matchups on ttp.teamId = matchups.awayTeam inner join teams on matchups.awayTeam = teams.id inner join schedule on matchups.week = schedule.weekId inner join leagues l on l.id = teams.leagueId where matchups.id = ? and p.date <= schedule.endDate and p.date >= schedule.startDate;',[req.body.id], function(err, rows, fields){
+                        if(err){
+                            res.write(JSON.stringify(err));
+                            return;
+                        }
+                        context.awayPerformance = rows;
+                        res.render('viewMatchup', context);
+                    })
+                })
             })
         })
     })
