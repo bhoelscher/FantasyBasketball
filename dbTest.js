@@ -595,7 +595,7 @@ app.get('/standings',function(req,res,next){
     })
 });
 
-app.get('/viewMatchup',function(req,res,next){
+app.post('/viewMatchup',function(req,res){
     var context = {};
     mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
         if(err){
@@ -610,7 +610,7 @@ app.get('/viewMatchup',function(req,res,next){
             }
             context.options = newrows;
             console.log('TEST');
-            mysql.pool.query('select id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints, t1.fantasyTeamName as homeTeamName, t2.fantasyTeamName as awayTeamName from v_matchup_scores inner join teams t1 on homeTeam = t1.id inner join teams t2 on awayTeam = t2.id where id = ?;',[req.query.id], function(err, rows, fields){
+            mysql.pool.query('select id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints, t1.fantasyTeamName as homeTeamName, t2.fantasyTeamName as awayTeamName from v_matchup_scores inner join teams t1 on homeTeam = t1.id inner join teams t2 on awayTeam = t2.id where id = ?;',[req.body.id], function(err, rows, fields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
