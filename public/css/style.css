@@ -6,6 +6,7 @@ body {
 /* Table Styling */
 
 #standings table {
+    border-collapse: collapse;
     width: 45%;
 }
 
