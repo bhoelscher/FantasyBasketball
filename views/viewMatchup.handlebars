@@ -5,7 +5,7 @@
 <h3>{{#each matchup}}{{this.homeTeamName}}{{/each}}</h3>
 <table>
     <tr>
-        <th>PlayerId</th>
+        <th>Player</th>
         <th>Date</th>
         <th>FGM</th>
         <th>FGA</th>
@@ -21,7 +21,7 @@
     </tr>
 {{#each homePerformance}}
     <tr>
-        <td>{{this.playerId}}</td>
+        <td>{{this.fName}} {{this.lname}}</td>
         <td>{{this.date}}</td>
         <td>{{this.FGM}}</td>
         <td>{{this.FGA}}</td>
