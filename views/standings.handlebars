@@ -3,16 +3,12 @@
 <table>
     <tr>
         <th>Team</th>
-        <th>Wins</th>
-        <th>Losses</th>
-        <th>Ties</th>
+        <th>Record (W-L-T)</th>
     </tr>
 {{#each standing}}
     <tr>
         <td>{{this.fantasyTeamName}}</td>
-        <td>{{this.wins}}</td>
-        <td>{{this.losses}}</td>
-        <td>{{this.ties}}</td>
+        <td>{{this.wins}}-{{this.losses}}-{{this.ties}}</td>
     </tr>
 {{/each}}
 </table>
