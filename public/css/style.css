@@ -7,7 +7,7 @@ body {
 
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 95%;
 }
 
 td, th {
@@ -22,7 +22,7 @@ th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #2b9bd8;
+    background-color: #2779a5;
     color: white;
 }
 
@@ -33,7 +33,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #2b9bd8;
+    background-color: #2779a5;
 }
 
 li {
