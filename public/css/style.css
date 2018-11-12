@@ -9,7 +9,7 @@ body {
     width: 45%;
 }
 
-table {
+#schedule table, #players table, #matchupDetails table, #create table {
     border-collapse: collapse;
     width: 95%;
 }

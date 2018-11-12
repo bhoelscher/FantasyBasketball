@@ -3,7 +3,7 @@
 <h2>{{#each matchup}}{{this.homeTeamName}} {{this.homeTeamPoints}} - {{this.awayTeamPoints}} {{this.awayTeamName}}{{/each}}</h2>
 
 <h3>{{#each matchup}}{{this.homeTeamName}}{{/each}}</h3>
-<table>
+<table id="matchupDetails">
     <tr>
         <th>Player</th>
         <th>Date</th>
@@ -39,7 +39,7 @@
 </table>
 
 <h3>{{#each matchup}}{{this.awayTeamName}}{{/each}}</h3>
-<table>
+<table id="matchupDetails">
     <tr>
         <th>PlayerId</th>
         <th>Date</th>
