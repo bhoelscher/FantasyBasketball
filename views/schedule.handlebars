@@ -16,8 +16,9 @@
         <td>{{this.homeTeamPoints}}</td>
         <td>{{this.awayTeamPoints}}</td>
         <td>{{this.awayTeam}}</td>
-        <td><form action="/viewMatchup?id={{this.matchupId}}">
-                <input type="submit" value="View Matchup" />
+        <td><form action="/viewMatchup" method="get">
+                <input type="hidden" name="id" value="{{this.matchupId}}">
+                <input type="submit" value="View Matchup">
             </form></td>
     </tr>
     {{/each}}
