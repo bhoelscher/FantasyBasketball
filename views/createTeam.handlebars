@@ -23,7 +23,10 @@
     <tr>
         <td>{{this.fantasyTeamName}}</td>
         <td>{{this.abbreviation}}</td>
-        <td><button onclick="deleteTeam({{this.id}})">Delete</button></td>
+        <td><form action="/deleteTeam" method="post">
+                <input type="hidden" name="teamId" value="{{this.id}}">
+                <input type="submit" value="Remove Team">
+            </form></td>
     </tr>
 {{/each}}
 </table>

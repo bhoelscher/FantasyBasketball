@@ -646,6 +646,29 @@ app.post('/dropPlayer',function(req,res){
     })
 })
 
+app.post('/deleteTeam',function(req,res){
+    var context = {};
+    mysql.pool.query('DELETE FROM `matchups` WHERE `homeTeam` = ? OR `awayTeam` = ?;',[req.body.teamId, req.body.teamId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        mysql.pool.query('DELETE FROM `teams_to_players` WHERE `teamId` = ?;',[req.body.teamId], function(err, rows, fields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            mysql.pool.query('DELETE FROM `teams` WHERE `id` = ?;',[req.body.teamId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                res.redirect('/createTeam');
+            })
+        })
+    })
+})
+
 
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
