@@ -15,7 +15,7 @@ where leagueId = :leagueIdInput;
 
 -- View Standings
 
-select fantasyTeamName, COALESCE(winners.wins,0) as wins, COALESCE(losers.losses, 0) as losses, COALESCE((home.homeTies + away.awayTies),0) as ties, (COALESCE(winners.wins,0) - COALESCE(losers.losses, 0)) as winsMinusLosses
+select teams.id, fantasyTeamName, COALESCE(winners.wins,0) as wins, COALESCE(losers.losses, 0) as losses, COALESCE((home.homeTies + away.awayTies),0) as ties, (COALESCE(winners.wins,0) - COALESCE(losers.losses, 0)) as winsMinusLosses
 from teams
 left outer join (select teams.id as team, count(results.winner) as wins
     from teams
@@ -65,8 +65,10 @@ inner join leagues l on l.id = :leagueIdInput;
 
 -- Total matchup score
 
-select id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints
+select id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints, t1.fantasyTeamName as homeTeamName, t2.fantasyTeamName as awayTeamName
 from v_matchup_scores
+inner join teams t1 on homeTeam = t1.id
+inner join teams t2 on awayTeam = t2.id
 where id = :matchupIdInput;
 
 -- View Matchup Details - home

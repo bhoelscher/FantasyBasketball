@@ -455,7 +455,7 @@ app.get('/schedule',function(req,res,next){
             return;
         }
         context.team = newrows;
-        mysql.pool.query('SELECT t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints FROM matchups m INNER JOIN teams t ON m.hometeam = t.id INNER JOIN teams t2 ON m.awayTeam = t2.id INNER JOIN v_matchup_scores v ON v.id = m.id WHERE t.leagueId = ? ORDER BY m.week;',[leagueId], function(err, rows, fields){
+        mysql.pool.query('SELECT m.id as matchupId, t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints FROM matchups m INNER JOIN teams t ON m.hometeam = t.id INNER JOIN teams t2 ON m.awayTeam = t2.id INNER JOIN v_matchup_scores v ON v.id = m.id WHERE t.leagueId = ? ORDER BY m.week;',[leagueId], function(err, rows, fields){
             if(err){
                 res.write(JSON.stringify(err));
                 return;
@@ -594,6 +594,32 @@ app.get('/standings',function(req,res,next){
         })
     })
 });
+
+app.get('/viewMatchup',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('select id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints, t1.fantasyTeamName as homeTeamName, t2.fantasyTeamName as awayTeamName from v_matchup_scores inner join teams t1 on homeTeam = t1.id inner join teams t2 on awayTeam = t2.id where id = ?;',[req.query.id], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.matchup = rows;
+                res.render('viewMatchup', context);
+            })
+        })
+    })
+})
 
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
