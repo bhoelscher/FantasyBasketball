@@ -5,12 +5,7 @@ body {
 
 /* Table Styling */
 
-#standings table {
-    border-collapse: collapse;
-    width: 45%;
-}
-
-#schedule table, #players table, #matchupDetails table, #create table {
+table {
     border-collapse: collapse;
     width: 95%;
 }
