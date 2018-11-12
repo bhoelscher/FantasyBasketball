@@ -455,7 +455,7 @@ app.get('/schedule',function(req,res,next){
             return;
         }
         context.team = newrows;
-        mysql.pool.query('SELECT t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints FROM matchups m INNER JOIN teams t ON m.hometeam = t.id INNER JOIN teams t2 ON m.awayTeam = t2.id INNER JOIN v_matchup_scores v ON v.id = m.id WHERE t.leagueId = ? ORDER BY m.week;',[leagueId], function(err, rows, fields){
+        mysql.pool.query('SELECT m.id as matchupId, t.fantasyTeamName as homeTeam, t2.fantasyTeamName as awayTeam, m.week, v.homeTeamPoints, v.awayTeamPoints FROM matchups m INNER JOIN teams t ON m.hometeam = t.id INNER JOIN teams t2 ON m.awayTeam = t2.id INNER JOIN v_matchup_scores v ON v.id = m.id WHERE t.leagueId = ? ORDER BY m.week;',[leagueId], function(err, rows, fields){
             if(err){
                 res.write(JSON.stringify(err));
                 return;
@@ -520,7 +520,7 @@ app.get('/unownedPlayers',function(req,res,next){
                 return;
             }
             context.options = newrows;
-            mysql.pool.query('select distinct players.id as playerId, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints from teams_to_players ttp inner join teams t on ttp.teamId = t.id and leagueId = ? right outer join players on ttp.playerId = players.id left outer join v_average_performances avg on players.id = avg.playerId inner join leagues l on l.id = ? where t.abbreviation is NULL;',[leagueId, leagueId], function(err, rows, fields){
+            mysql.pool.query('select distinct players.id as playerId, players.fName, players.lname, players.basketballTeam, players.position, avg.FGM, avg.FGA, avg.FTM, avg.FTA, avg.points, avg.assists, avg.rebounds, avg.steals, avg.blocks, avg.turnovers, (avg.FGM*l.FGM + avg.FGA*l.FGA + avg.FTM*l.FTM + avg.FTA*l.FTA + avg.points*l.points + avg.assists*l.assists + avg.rebounds*l.rebounds + avg.steals*l.steals + avg.blocks*l.blocks + avg.turnovers*l.turnovers) as FantasyPoints from teams_to_players ttp inner join teams t on ttp.teamId = t.id and leagueId = ? right outer join players on ttp.playerId = players.id left outer join v_average_performances avg on players.id = avg.playerId inner join leagues l on l.id = ? where t.abbreviation is NULL order by FantasyPoints;',[leagueId, leagueId], function(err, rows, fields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
@@ -583,7 +583,7 @@ app.get('/standings',function(req,res,next){
                 return;
             }
             context.options = newrows;
-            mysql.pool.query('select teams.id, fantasyTeamName, COALESCE(winners.wins,0) as wins, COALESCE(losers.losses, 0) as losses, COALESCE((home.homeTies + away.awayTies),0) as ties, (COALESCE(winners.wins,0) - COALESCE(losers.losses, 0)) as winsMinusLosses from teams left outer join (select teams.id as team, count(results.winner) as wins from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.homeTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.awayTeam else NULL end) as winner from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.winner group by teams.id) as winners on winners.team = teams.id left outer join (select teams.id as team, count(results.loser) as losses from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.awayTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.homeTeam else NULL end) as loser from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.loser group by teams.id) as losers on losers.team = teams.id left outer join (select teams.id as homeTeam, count(v_matchup_scores.id) as homeTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.homeTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as home on teams.id = home.homeTeam left outer join (select teams.id as awayTeam, count(v_matchup_scores.id) as awayTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.awayTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as away on teams.id = away.awayTeam where teams.leagueId = ? order by winsMinusLosses desc;',[leagueId], function(err, rows, fields){
+            mysql.pool.query('select teams.id, fantasyTeamName, COALESCE(winners.wins,0) as wins, COALESCE(losers.losses, 0) as losses, COALESCE((home.homeTies + away.awayTies),0) as ties, (COALESCE(winners.wins,0) - COALESCE(losers.losses, 0)) as winsMinusLosses from teams left outer join (select teams.id as team, count(results.winner) as wins from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.homeTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.awayTeam else NULL end) as winner from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.winner group by teams.id) as winners on winners.team = teams.id left outer join (select teams.id as team, count(results.loser) as losses from teams inner join (select v_matchup_scores.id, v_matchup_scores.homeTeam, v_matchup_scores.awayteam,  (case when homeTeamPoints > awayTeamPoints then v_matchup_scores.awayTeam when awayTeamPoints > homeTeamPoints then v_matchup_scores.homeTeam else NULL end) as loser from v_matchup_scores where v_matchup_scores.endDate < CURDATE()) as results on teams.id = results.loser group by teams.id) as losers on losers.team = teams.id left outer join (select teams.id as homeTeam, count(v_matchup_scores.id) as homeTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.homeTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as home on teams.id = home.homeTeam left outer join (select teams.id as awayTeam, count(v_matchup_scores.id) as awayTies from teams left outer join v_matchup_scores on teams.id = v_matchup_scores.awayTeam and homeTeamPoints = awayTeamPoints and v_matchup_scores.endDate < CURDATE() group by teams.id) as away on teams.id = away.awayTeam where teams.leagueId = ? order by winsMinusLosses desc, wins desc, losses asc, ties asc;',[leagueId], function(err, rows, fields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
@@ -594,6 +594,81 @@ app.get('/standings',function(req,res,next){
         })
     })
 });
+
+app.post('/viewMatchup',function(req,res){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('select v_matchup_scores.id, homeTeam, awayTeam, homeTeamPoints, awayTeamPoints, t1.fantasyTeamName as homeTeamName, t2.fantasyTeamName as awayTeamName from v_matchup_scores inner join teams t1 on homeTeam = t1.id inner join teams t2 on awayTeam = t2.id where v_matchup_scores.id = ?;',[req.body.id], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.matchup = rows;
+                mysql.pool.query('select players.fName, players.lname, p.date, p.FGM, p.FGA, p.FTM, p.FTA, p.points, p.assists, p.rebounds, p.steals, p.blocks, p.turnovers, (p.FGM*l.FGM + p.FGA*l.FGA + p.FTM*l.FTM + p.FTA*l.FTA + p.points*l.points + p.assists*l.assists + p.rebounds*l.rebounds + p.steals*l.steals + p.blocks*l.blocks + p.turnovers*l.turnovers) as FantasyPoints from performances p inner join players on p.playerId = players.id inner join teams_to_players ttp on players.id = ttp.playerId inner join matchups on ttp.teamId = matchups.homeTeam inner join teams on matchups.homeTeam = teams.id inner join schedule on matchups.week = schedule.weekId inner join leagues l on l.id = teams.leagueId where matchups.id = ? and p.date <= schedule.endDate and p.date >= schedule.startDate;',[req.body.id], function(err, rows, fields){
+                    if(err){
+                        res.write(JSON.stringify(err));
+                        return;
+                    }
+                    context.homePerformance = rows;
+                    mysql.pool.query('select players.fName, players.lname, p.date, p.FGM, p.FGA, p.FTM, p.FTA, p.points, p.assists, p.rebounds, p.steals, p.blocks, p.turnovers, (p.FGM*l.FGM + p.FGA*l.FGA + p.FTM*l.FTM + p.FTA*l.FTA + p.points*l.points + p.assists*l.assists + p.rebounds*l.rebounds + p.steals*l.steals + p.blocks*l.blocks + p.turnovers*l.turnovers) as FantasyPoints from performances p inner join players on p.playerId = players.id inner join teams_to_players ttp on players.id = ttp.playerId inner join matchups on ttp.teamId = matchups.awayTeam inner join teams on matchups.awayTeam = teams.id inner join schedule on matchups.week = schedule.weekId inner join leagues l on l.id = teams.leagueId where matchups.id = ? and p.date <= schedule.endDate and p.date >= schedule.startDate;',[req.body.id], function(err, rows, fields){
+                        if(err){
+                            res.write(JSON.stringify(err));
+                            return;
+                        }
+                        context.awayPerformance = rows;
+                        res.render('viewMatchup', context);
+                    })
+                })
+            })
+        })
+    })
+})
+
+app.post('/dropPlayer',function(req,res){
+    var context = {};
+    mysql.pool.query('DELETE FROM`teams_to_players` WHERE `teamId` = ? AND playerId = ?;',[req.body.teamId, req.body.playerId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        res.redirect('/viewTeam?teamId=' + req.body.teamId);
+    })
+})
+
+app.post('/deleteTeam',function(req,res){
+    var context = {};
+    mysql.pool.query('DELETE FROM `matchups` WHERE `homeTeam` = ? OR `awayTeam` = ?;',[req.body.teamId, req.body.teamId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        mysql.pool.query('DELETE FROM `teams_to_players` WHERE `teamId` = ?;',[req.body.teamId], function(err, rows, fields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            mysql.pool.query('DELETE FROM `teams` WHERE `id` = ?;',[req.body.teamId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                res.redirect('/createTeam');
+            })
+        })
+    })
+})
+
 
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');

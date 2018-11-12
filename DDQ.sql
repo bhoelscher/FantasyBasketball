@@ -28,7 +28,8 @@ CREATE TABLE `players` (
   `fName` varchar(255) NOT NULL,
   `lname` varchar(255) NOT NULL,
   `basketballTeam` varchar(255) DEFAULT NULL,
-  `position` varchar(2) DEFAULT NULL,
+  `position` varchar(5) DEFAULT NULL,
+  `nbaId` int(15),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
