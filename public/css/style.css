@@ -5,6 +5,10 @@ body {
 
 /* Table Styling */
 
+#standings table {
+    width: 45%;
+}
+
 table {
     border-collapse: collapse;
     width: 95%;
