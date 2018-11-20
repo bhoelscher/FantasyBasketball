@@ -248,7 +248,7 @@ app.get('/createPerformance',function(req,res,next){
                     return;
                 }
                 context.options = newrows;
-                mysql.pool.query('SELECT players.fName, players.lname, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances INNER JOIN players on performance.playerId = players.id', function(err, rows, fields){
+                mysql.pool.query('SELECT players.fName, players.lname, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances INNER JOIN players on performances.playerId = players.id', function(err, rows, fields){
                     if(err){
                         res.write(JSON.stringify(err));
                         return;
@@ -287,7 +287,7 @@ app.post('/createPerformance',function(req,res){
                         return;
                     }
                     context.options = newrows;
-                    mysql.pool.query('SELECT players.fName, players.lname, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances INNER JOIN players on performance.playerId = players.id', function(err, rows, fields){
+                    mysql.pool.query('SELECT players.fName, players.lname, date, FGM, FGA, FTM, FTA, points, assists, rebounds, steals, blocks, turnovers FROM performances INNER JOIN players on performances.playerId = players.id', function(err, rows, fields){
                         if(err){
                             res.write(JSON.stringify(err));
                             return;
@@ -388,7 +388,7 @@ app.get('/createMatchup',function(req,res,next){
                 return;
             }
             context.team = newrows;
-            mysql.pool.query('SELECT m.homeTeam, m.awayTeam, t.name as homeName, at.name as awayName, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id INNER JOIN teams at on m.awayTeam = at.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
+            mysql.pool.query('SELECT m.homeTeam, m.awayTeam, t.fantasyTeamName as homeName, awt.fantasyTeamName as awayName, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id INNER JOIN teams awt ON m.awayTeam = awt.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
                 if(err){
                     res.write(JSON.stringify(err));
                     return;
@@ -427,7 +427,7 @@ app.post('/createMatchup',function(req,res){
                     return;
                 }
                 context.status = 'Matchup Created';
-                mysql.pool.query('SELECT m.homeTeam, m.awayTeam, t.name as homeName, at.name as awayName, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id INNER JOIN teams at on m.awayTeam = at.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
+                mysql.pool.query('SELECT m.homeTeam, m.awayTeam, t.fantasyTeamName as homeName, awt.fantasyTeamName as awayName, m.week FROM matchups m INNER JOIN teams t on m.hometeam = t.id INNER JOIN teams awt ON m.awayTeam = awt.id WHERE t.leagueId = ?;',[leagueId], function(err, rows, fields){
                     if(err){
                         res.write(JSON.stringify(err));
                         return;
