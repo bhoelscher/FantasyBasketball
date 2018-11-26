@@ -1,0 +1,44 @@
+<h3>Update League Settings</h3>
+
+{{#each league}}
+<form id="createleague" action="/updateLeague" method="post">
+    <br>
+    League Name
+    <input type="text" value="{{this.name}}" name="name">
+    <br>
+    Scoring System
+    <br>
+    Fantasy Points for each FGM
+    <input type="number" value="{{this.FGM}}" name="FGM">
+    <br>
+    Fantasy Points for each FGA
+    <input type="number" value="{{this.FGA}}" name="FGA">
+    <br>
+    Fantasy Points for each FTM
+    <input type="number" value="{{this.FTM}}" name="FTM">
+    <br>
+    Fantasy Points for each FTA
+    <input type="number" value="{{this.FTA}}" name="FTA">
+    <br>
+    Fantasy Points for each Point
+    <input type="number" value="{{this.points}}" name="Points">
+    <br>
+    Fantasy Points for each Assist
+    <input type="number" value="{{this.assists}}" name="Assists">
+    <br>
+    Fantasy Points for each Rebound
+    <input type="number" value="{{this.rebounds}}" name="Rebounds">
+    <br>
+    Fantasy Points for each Steal
+    <input type="number" value="{{this.steals}}" name="Steals">
+    <br>
+    Fantasy Points for each Block
+    <input type="number" value="{{this.blocks}}" name="Blocks">
+    <br>
+    Fantasy Points for each Turnover
+    <input type="number" value="{{this.turnovers}}" name="Turnovers">
+    <br>
+    <input type="hidden" name="id" value="{{this.id}}"
+    <input type="submit" value="Submit">
+</form>
+{{/each}}

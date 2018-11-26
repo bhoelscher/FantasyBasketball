@@ -543,6 +543,42 @@ app.post('/addPlayer',function(req,res){
     })
 })
 
+app.get('/updateLeague',function(req,res,next){
+    var context = {};
+    mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        context.team = rows;
+        mysql.pool.query('SELECT id, name FROM leagues', function(err, newrows, newfields){
+            if(err){
+                res.write(JSON.stringify(err));
+                return;
+            }
+            context.options = newrows;
+            mysql.pool.query('SELECT * FROM leagues WHERE id = ?',[leagueId], function(err, rows, fields){
+                if(err){
+                    res.write(JSON.stringify(err));
+                    return;
+                }
+                context.league = rows;
+                res.render('updateLeague', context);
+            })
+        })
+    })
+})
+
+app.post('/updateLeague',function(req,res,next){
+    mysql.pool.query('UPDATE `leagues` SET name = ?, FGM = ?, FGA = ?, FTM = ?, FTA = ?, points = ?, assists = ?, rebounds = ?, steals = ?, blocks = ?, turnovers = ? WHERE id = ?;',[req.body.name, req.body.FGM, req.body.FGA, req.body.FTM, req.body.FTA, req.body.points, req.body.assists, req.body.rebounds, req.body.steals, req.body.blocks, req.body.turnovers, req.body.id],function(err, rows, fields){
+        if(err){
+            res.write(JSON.stringify(err));
+            return;
+        }
+        res.redirect('/updateLeague')
+    })
+})
+
 app.get('/allPlayers',function(req,res,next){
     var context = {};
     mysql.pool.query('SELECT id, fantasyTeamName, abbreviation FROM teams WHERE leagueId = ?',[leagueId], function(err, rows, fields){
