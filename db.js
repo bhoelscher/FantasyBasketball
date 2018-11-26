@@ -22,7 +22,7 @@ app.use('/', express.static(publicPath));
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 8670);
+app.set('port', 8671);
 
 
 app.get('/home',function(req,res,next){
