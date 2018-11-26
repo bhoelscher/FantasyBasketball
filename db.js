@@ -575,7 +575,7 @@ app.post('/updateLeague',function(req,res,next){
             res.write(JSON.stringify(err));
             return;
         }
-        res.redirect('/updateLeague')
+        res.redirect('/home')
     })
 })
 
