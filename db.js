@@ -570,7 +570,7 @@ app.get('/updateLeague',function(req,res,next){
 })
 
 app.post('/updateLeague',function(req,res,next){
-    mysql.pool.query('UPDATE `leagues` SET name = ?, FGM = ?, FGA = ?, FTM = ?, FTA = ?, points = ?, assists = ?, rebounds = ?, steals = ?, blocks = ?, turnovers = ? WHERE id = ?;',[req.body.name, req.body.FGM, req.body.FGA, req.body.FTM, req.body.FTA, req.body.points, req.body.assists, req.body.rebounds, req.body.steals, req.body.blocks, req.body.turnovers, req.body.id],function(err, rows, fields){
+    mysql.pool.query('UPDATE `leagues` SET name = ?, FGM = ?, FGA = ?, FTM = ?, FTA = ?, points = ?, assists = ?, rebounds = ?, steals = ?, blocks = ?, turnovers = ? WHERE id = ?;',[req.body.name, req.body.FGM, req.body.FGA, req.body.FTM, req.body.FTA, req.body.Points, req.body.Assists, req.body.Rebounds, req.body.Steals, req.body.Blocks, req.body.Turnovers, req.body.id],function(err, rows, fields){
         if(err){
             res.write(JSON.stringify(err));
             return;
